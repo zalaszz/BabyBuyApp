@@ -16,13 +16,12 @@ public interface IFireBase {
     public FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public FirebaseUser user = mAuth.getCurrentUser();
 
-    public default void onStartFbImplementation(IFirebaseAuth auth, Runnable runnable){
+    public default void onStartFbImplementation(IFirebaseAuth auth, Runnable activity){
         // Check if user is signed in (non-null) and update UI accordingly.
         if(user == null) {
             auth.onStartAuth();
             return;
         }
-        runnable.run();
-//        startActivity(new Intent(activity, Home.class));
+        activity.run();
     }
 }

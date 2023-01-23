@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bh75uh.androidassignment.loginregister.Login;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class Home extends AppCompatActivity {
 
@@ -32,6 +33,7 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStart() {
         TextView tv = findViewById(R.id.blyat);
+        TextView dn = findViewById(R.id.displayName);
 
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -40,19 +42,25 @@ public class Home extends AppCompatActivity {
         interfaceTeste fufa = () -> {
             Log.d("currentUserCheck", "not logged in");
             tv.setText("");
+            dn.setText("");
             startActivity(new Intent(Home.this, Login.class));
-            return;
         };
 
         if(currentUser == null) {
             fufa.onStartTeste();
+            return;
         }
 
         tv.setText(currentUser.getEmail());
+        dn.setText(currentUser.getDisplayName());
     }
 
     public void onClickLogOutBtn(View v){
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(Home.this, Login.class));
+    }
+
+    public void onClickChangeActivity(View v){
+        startActivity(new Intent(Home.this, ListItems.class));
     }
 }
