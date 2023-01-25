@@ -1,6 +1,7 @@
 package com.bh75uh.androidassignment;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,11 +42,11 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
         Item item = items.get(position);
 
         // Set item views based on your views and data model
-        TextView textView = holder.nameTextView;
-        textView.setText(item.getName());
-        Button button = holder.messageButton;
-        button.setText(item.isOnline() ? "Message" : "Offline");
-        button.setEnabled(item.isOnline());
+        TextView textView = holder.itemName;
+        textView.setText(item.getItemName());
+        Button button = holder.editBtn;
+        button.setText("Edit");
+//        button.setEnabled(item.isOnline());
     }
 
     @Override
@@ -58,8 +59,8 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             // Your holder should contain a member variable
             // for any view that will be set as you render a row
-            public TextView nameTextView;
-            public Button messageButton;
+            public TextView itemName;
+            public Button editBtn;
 
             // We also create a constructor that accepts the entire item row
             // and does the view lookups to find each subview
@@ -68,8 +69,8 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
                 // to access the context from any ViewHolder instance.
                 super(itemView);
 
-                nameTextView = (TextView) itemView.findViewById(R.id.contact_name);
-                messageButton = (Button) itemView.findViewById(R.id.message_button);
+                itemName = (TextView) itemView.findViewById(R.id.txtDisplayItemName);
+                editBtn = (Button) itemView.findViewById(R.id.editBtn);
             }
         }
 }

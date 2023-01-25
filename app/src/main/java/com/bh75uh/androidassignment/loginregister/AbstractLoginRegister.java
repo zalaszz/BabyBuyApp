@@ -17,9 +17,15 @@ import com.bh75uh.androidassignment.IFireBase;
 import com.bh75uh.androidassignment.IFirebaseAuth;
 import com.bh75uh.androidassignment.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AbstractLoginRegister extends AppCompatActivity implements IFireBase {
     protected Activity login;
@@ -62,7 +68,6 @@ public class AbstractLoginRegister extends AppCompatActivity implements IFireBas
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("loginSuccess", "signInWithCustomToken:success");
-
                     startActivity(new Intent(login, Home.class));
                 } else {
                     // If sign in fails, display a message to the user.

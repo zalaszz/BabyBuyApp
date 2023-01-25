@@ -1,33 +1,37 @@
 package com.bh75uh.androidassignment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Item {
-    private String mName;
-    private boolean mOnline;
+    private Object itemName, price, geotag, purchased, active;
 
-    public Item(String name, boolean online) {
-        mName = name;
-        mOnline = online;
+    public Item(Map map) {
+        this.itemName = map.get("itemName");
+        this.price = map.get("price");
+        this.purchased = map.get("purchased");
+        this.geotag = map.get("geotag");
+        this.active = map.get("active");
     }
 
-    public String getName() {
-        return mName;
+    public String getItemName() {
+        return (String) itemName;
     }
 
-    public boolean isOnline() {
-        return mOnline;
+    public String getPrice() {
+        return (String) price;
     }
 
-    private static int lastContactId = 0;
+    public boolean wasPurchased() {
+        return (boolean) purchased;
+    }
 
-    public static ArrayList<Item> createItemsList(int numItems) {
-        ArrayList<Item> items = new ArrayList<Item>();
+    public String getGeoTag() {
+        return (String) geotag;
+    }
 
-        for (int i = 1; i <= numItems; i++) {
-            items.add(new Item("Person " + ++lastContactId, i <= numItems / 2));
-        }
-
-        return items;
+    public boolean isActive() {
+        return (boolean) active;
     }
 }

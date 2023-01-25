@@ -33,7 +33,6 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStart() {
         TextView tv = findViewById(R.id.blyat);
-        TextView dn = findViewById(R.id.displayName);
 
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -42,7 +41,6 @@ public class Home extends AppCompatActivity {
         interfaceTeste fufa = () -> {
             Log.d("currentUserCheck", "not logged in");
             tv.setText("");
-            dn.setText("");
             startActivity(new Intent(Home.this, Login.class));
         };
 
@@ -52,7 +50,6 @@ public class Home extends AppCompatActivity {
         }
 
         tv.setText(currentUser.getEmail());
-        dn.setText(currentUser.getDisplayName());
     }
 
     public void onClickLogOutBtn(View v){

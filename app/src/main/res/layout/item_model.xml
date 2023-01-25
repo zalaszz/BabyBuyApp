@@ -17,7 +17,7 @@
         app:srcCompat="@drawable/bg_2" />
 
     <TextView
-        android:id="@+id/contact_name"
+        android:id="@+id/txtDisplayItemName"
         android:layout_width="0dp"
         android:layout_gravity="center"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         />
 
     <Button
-        android:id="@+id/message_button"
+        android:id="@+id/editBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
