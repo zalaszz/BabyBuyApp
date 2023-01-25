@@ -1,5 +1,6 @@
 package com.bh75uh.androidassignment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,9 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ListItems extends AppCompatActivity implements IFireBase{
+public class ListItems extends AppCompatActivity implements IFireBase {
     DemoAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +36,11 @@ public class ListItems extends AppCompatActivity implements IFireBase{
         // Lookup the recyclerview in activity layout
         RecyclerView rv = (RecyclerView) findViewById(R.id.recylerV);
 
+        Query query = db.collection(mAuth.getCurrentUser().getUid()).orderBy("itemName", Query.Direction.ASCENDING);
+        FirestoreRecyclerOptions<Item> options = new FirestoreRecyclerOptions.Builder<Item>().setQuery(query, Item.class).build();
+
         // Create adapter passing in the sample user data
-        adapter = new DemoAdapter(readUserDB());
+        adapter = new DemoAdapter(options);
         // Attach the adapter to the recyclerview to populate items
         rv.setAdapter(adapter);
         // Set layout manager to position the items
@@ -42,9 +48,25 @@ public class ListItems extends AppCompatActivity implements IFireBase{
         // That's all!
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     public void openDialog(View view){
         AddItemDialog addItemDialog = new AddItemDialog(this);
         addItemDialog.show(getSupportFragmentManager(), "addItemDialog");
+    }
+
+    public void onClickEditBtn(View view){
+        startActivity(new Intent(this, EditItemActivity.class).putExtra("id", String.valueOf(view.getTag())));
     }
 
     public ArrayList<Item> readUserDB(){
@@ -57,16 +79,15 @@ public class ListItems extends AppCompatActivity implements IFireBase{
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-//                        Log.d("SEXY TIME", document.getId() + " => " + document.getData());
-                        items.add(new Item(document.getData()));
-//                        Log.d("items", String.valueOf(items.size()));
+                        items.add(new Item(document.getData(), document.getId()));
                     }
-                    adapter.notifyDataSetChanged();
                 } else {
                     Log.w("TAG", "Error getting documents.", task.getException());
                 }
             }
         });
+
+        Log.d("COCK", items.toString());
 
         return items;
     }

@@ -29,6 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:onClick="onClickEditBtn"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textSize="10sp" />

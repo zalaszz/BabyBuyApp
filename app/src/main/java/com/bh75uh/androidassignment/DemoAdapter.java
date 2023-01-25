@@ -11,15 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.util.List;
 
-public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
-
-    private List<Item> items;
+public class DemoAdapter extends FirestoreRecyclerAdapter<Item, DemoAdapter.ViewHolder> {
 
     // Pass in the contact array into the constructor
-    public DemoAdapter(List<Item> items) {
-        this.items = items;
+    public DemoAdapter(FirestoreRecyclerOptions<Item> options) {
+        super(options);
     }
 
     @NonNull
@@ -36,22 +38,19 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
         return viewHolder;
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get the data model based on position
-        Item item = items.get(position);
+//    @Override
+//    public int getItemCount() {
+//        return items.size();
+//    }
 
-        // Set item views based on your views and data model
-        TextView textView = holder.itemName;
-        textView.setText(item.getItemName());
+    @Override
+    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Item model) {
+        holder.itemName.setText(model.getItemName());
         Button button = holder.editBtn;
         button.setText("Edit");
-//        button.setEnabled(item.isOnline());
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
+//        button.setTag(model.getDocumentId());
+        DocumentSnapshot doc = getSnapshots().getSnapshot(holder.getAdapterPosition());
+        button.setTag(doc.getId());
     }
 
     // Provide a direct reference to each of the views within a data item
