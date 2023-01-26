@@ -20,10 +20,10 @@ public interface IFireBase {
 
     public default void onStartFbImplementation(IFirebaseAuth auth, Runnable activity){
         // Check if user is signed in (non-null) and update UI accordingly.
-        if(user == null) {
-            auth.onStartAuth();
-            return;
-        }
-        activity.run();
+//        if(user == null) {
+//            auth.onStartAuth();
+//            return;
+//        }
+//        activity.run();
     }
 }

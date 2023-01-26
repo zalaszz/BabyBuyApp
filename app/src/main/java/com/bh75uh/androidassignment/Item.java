@@ -5,17 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Item {
-    private Object itemName, price, geotag, purchased, active;
-    private String documentId;
+    private Object itemName, price, geotag, purchased, description, imagePath;
 
-    public Item(Map map, String documentId) {
+    public Item(Map map) {
         this.itemName = map.get("itemName");
         this.price = map.get("price");
         this.purchased = map.get("purchased");
         this.geotag = map.get("geotag");
-        this.active = map.get("active");
-
-        this.documentId = documentId;
+        this.description = map.get("description");
+        this.imagePath = map.get("imagePath");
     }
 
     public Item() {}
@@ -36,11 +34,11 @@ public class Item {
         return (String) geotag;
     }
 
-    public boolean isActive() {
-        return (boolean) active;
+    public String getDescription() {
+        return (String) description;
     }
 
-    public String getDocumentId(){
-        return documentId;
+    public String getImagePath(){
+        return (String) imagePath;
     }
 }

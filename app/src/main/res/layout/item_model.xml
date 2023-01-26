@@ -10,7 +10,7 @@
     >
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/itemDisplayImg"
         android:layout_width="30dp"
         android:layout_height="80dp"
         android:layout_weight=".5"

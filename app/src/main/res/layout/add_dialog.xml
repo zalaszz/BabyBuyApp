@@ -48,6 +48,42 @@
             tools:layout_editor_absoluteX="74dp"
             tools:layout_editor_absoluteY="98dp" />
 
+        <EditText
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:ems="10"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:inputType="textMultiLine"
+            android:hint="Description"
+            android:lines="5"
+            tools:layout_editor_absoluteX="74dp"
+            tools:layout_editor_absoluteY="98dp" />
+
+        <Button
+            android:id="@+id/btnSelectImage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:layout_centerVertical="true"
+            android:text="Select Image"
+            android:layout_centerHorizontal="true"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="74dp"
+            tools:layout_editor_absoluteY="98dp" />
+
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:ems="10"
+            android:layout_centerVertical="true"
+            android:text="Select Image"
+            android:layout_centerHorizontal="true"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="74dp"
+            tools:layout_editor_absoluteY="98dp" />
 
     </LinearLayout>
 </RelativeLayout>
