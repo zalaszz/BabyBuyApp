@@ -53,14 +53,18 @@ public class DemoAdapter extends FirestoreRecyclerAdapter<Item, DemoAdapter.View
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Item model) {
         holder.itemName.setText(model.getItemName());
+        holder.itemDescription.setHint(model.getDescription());
         Button button = holder.editBtn;
         ImageView img = holder.itemDisplayImg;
         button.setText("Edit");
+
+        //Getting the document id from the holder position
         DocumentSnapshot doc = getSnapshots().getSnapshot(holder.getAdapterPosition());
         button.setTag(doc.getId());
 
-        Log.d("MERDA", model.getImagePath());
+        model.setID(doc.getId());
 
+        //Displaying image in recycler
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference photoReference= storageReference.child(model.getImagePath());
 
@@ -68,7 +72,6 @@ public class DemoAdapter extends FirestoreRecyclerAdapter<Item, DemoAdapter.View
         photoReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                Log.d("ENTROU MERDA FDS", model.getImagePath());
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 img.setImageBitmap(bmp);
             }
@@ -78,14 +81,11 @@ public class DemoAdapter extends FirestoreRecyclerAdapter<Item, DemoAdapter.View
     // Provide a direct reference to each of the views within a data item
         // Used to cache the views within the item layout for fast access
         public class ViewHolder extends RecyclerView.ViewHolder {
-            // Your holder should contain a member variable
-            // for any view that will be set as you render a row
             public TextView itemName;
+            public TextView itemDescription;
             public Button editBtn;
             public ImageView itemDisplayImg;
 
-            // We also create a constructor that accepts the entire item row
-            // and does the view lookups to find each subview
             public ViewHolder(View itemView) {
                 // Stores the itemView in a public final member variable that can be used
                 // to access the context from any ViewHolder instance.
@@ -94,6 +94,7 @@ public class DemoAdapter extends FirestoreRecyclerAdapter<Item, DemoAdapter.View
                 itemName = (TextView) itemView.findViewById(R.id.txtDisplayItemName);
                 editBtn = (Button) itemView.findViewById(R.id.editBtn);
                 itemDisplayImg = (ImageView) itemView.findViewById(R.id.itemDisplayImg);
+                itemDescription = (TextView) itemView.findViewById((R.id.txtDisplayDescription));
             }
         }
 }

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,11 +32,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditItemActivity extends AppCompatActivity implements IFireBase {
+public class EditItemActivity extends FireBaseDB {
 
     public String id;
     ImageView IVPreviewImage;
@@ -51,7 +49,7 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
         setContentView(R.layout.activity_edit_item);
         id = getIntent().getStringExtra("id");
 
-        readUserDB();
+        readData();
 
         btnSelectImage = findViewById(R.id.btnEditImgSelect);
         IVPreviewImage = findViewById(R.id.editImgPreview);
@@ -59,7 +57,7 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
         findViewById(R.id.btnConfirmEdit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUserDB();
+                updateData();
             }
         });
 
@@ -75,7 +73,7 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.menu_delete){
-            deleteUserDB();
+            deleteData();
             return true;
         }else if (item.getItemId() == R.id.menu_sendSMS){
             Intent in = new Intent (Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
@@ -85,6 +83,10 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Allows the user to select a contact from the contact list
+     * @param data
+     */
     private void contactPicked(Intent data) {
         Cursor cursor = null;
 
@@ -108,7 +110,7 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
         String itemPrice = String.valueOf(((EditText)findViewById(R.id.txtEditPrice)).getText());
         String geoTag = String.valueOf(((EditText)findViewById(R.id.txtEditGeoTag)).getText());
 
-
+        //Sms message to send
         String smsMessage = "The item " +itemName+ " with the price "+itemPrice+" can be purchased here "+geoTag+".";
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("smsto:" + phoneNumber));
@@ -125,33 +127,25 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
         return true;
     }
 
-    public void readUserDB(){
-        db.collection(mAuth.getCurrentUser().getUid())
-        .get()
-        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("YEET", String.valueOf(document.getId().equals(id)));
-                        if(document.getId().equals(id)){
-                            Log.d("YEET", String.valueOf(Boolean.parseBoolean(document.getData().get("purchased").toString())));
-                            ((EditText) findViewById(R.id.txtEditItemName)).setText(String.valueOf(document.getData().get("itemName")));
-                            ((EditText) findViewById(R.id.txtEditGeoTag)).setText(String.valueOf(document.getData().get("geotag")));
-                            ((EditText) findViewById(R.id.txtEditPrice)).setText(String.valueOf(document.getData().get("price")));
-                            ((EditText) findViewById(R.id.txtEditDescription)).setText(String.valueOf(document.getData().get("description")));
-                            ((Switch) findViewById(R.id.switchPurchased)).setChecked(Boolean.parseBoolean(document.getData().get("purchased").toString()));
-                            downloadImage(String.valueOf(document.getData().get("imagePath")));
-                        }
-                    }
-                } else {
-                    Log.w("TAG", "Error getting documents.", task.getException());
-                }
-            }
+    /**
+     * Reads data from the user collection
+     */
+    public void readData(){
+        getDocument(id, (document) -> {
+            QueryDocumentSnapshot doc = (QueryDocumentSnapshot) document;
+            ((EditText) findViewById(R.id.txtEditItemName)).setText(String.valueOf(doc.getData().get("itemName")));
+            ((EditText) findViewById(R.id.txtEditGeoTag)).setText(String.valueOf(doc.getData().get("geotag")));
+            ((EditText) findViewById(R.id.txtEditPrice)).setText(String.valueOf(doc.getData().get("price")));
+            ((EditText) findViewById(R.id.txtEditDescription)).setText(String.valueOf(doc.getData().get("description")));
+            ((Switch) findViewById(R.id.switchPurchased)).setChecked(Boolean.parseBoolean(doc.getData().get("purchased").toString()));
+            downloadImage(String.valueOf(doc.getData().get("imagePath")), (bmp) -> IVPreviewImage.setImageBitmap((Bitmap)bmp));
         });
     }
 
-    public void updateUserDB(){
+    /**
+     * Updates data from the user collection
+     */
+    public void updateData(){
         Map<String, Object> editedData = new HashMap<String, Object>(){
             {
                 put("itemName", ((EditText) findViewById(R.id.txtEditItemName)).getText().toString());
@@ -162,62 +156,30 @@ public class EditItemActivity extends AppCompatActivity implements IFireBase {
             }
         };
 
-        db.collection(mAuth.getCurrentUser().getUid())
-                .document(id)
-                .update(editedData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Toast.makeText(getApplicationContext(), "Item edited with success!", Toast.LENGTH_LONG);
-                        startActivity(new Intent(getApplicationContext(), ListItems.class));
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error! Something went wrong", Toast.LENGTH_LONG);
-                    }
-                });
-
+        updateDocument(id, editedData, () -> {
+            Toast.makeText(getApplicationContext(), "Item edited with success!", Toast.LENGTH_LONG);
+            startActivity(new Intent(getApplicationContext(), ListItemsActivity.class));
+        });
     }
 
-    public void deleteUserDB(){
-        db.collection(mAuth.getCurrentUser().getUid())
-                .document(id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Toast.makeText(getApplicationContext(), "Item deleted with success!", Toast.LENGTH_LONG);
-                        startActivity(new Intent(getApplicationContext(), ListItems.class));
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error! Something went wrong", Toast.LENGTH_LONG);
-                    }
-                });
-
+    /**
+     * Deletes data from the user collection
+     */
+    public void deleteData(){
+        deleteDocument(id, () -> {
+            Toast.makeText(getApplicationContext(), "Item deleted with success!", Toast.LENGTH_LONG);
+            startActivity(new Intent(getApplicationContext(), ListItemsActivity.class));
+        });
     }
 
+    /**
+     * Gets an image from the gallery
+     */
     private void imageChooser()
     {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
-    }
-
-    private void downloadImage(String path){
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference photoReference= storageReference.child(path);
-
-        final long ONE_MEGABYTE = 1024 * 1024 * 5;
-        photoReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                IVPreviewImage.setImageBitmap(bmp);
-            }
-        });
     }
 
     @Override

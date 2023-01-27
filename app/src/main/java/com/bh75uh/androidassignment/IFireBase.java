@@ -16,14 +16,4 @@ import java.util.function.Function;
 public interface IFireBase {
     public FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public FirebaseUser user = mAuth.getCurrentUser();
-
-    public default void onStartFbImplementation(IFirebaseAuth auth, Runnable activity){
-        // Check if user is signed in (non-null) and update UI accordingly.
-//        if(user == null) {
-//            auth.onStartAuth();
-//            return;
-//        }
-//        activity.run();
-    }
 }
